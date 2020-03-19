@@ -33,7 +33,7 @@ data6 = np.append(data3, data4, 0)
 
 training_data = np.append(data5, data6, 0)
 
-training_data = (training_data/2**16) - 0.5
+training_data = (training_data/2**15) - 0.5
 
 training_labels = np.zeros(76)
 training_labels[0:19] = 1
@@ -60,14 +60,15 @@ model.compile(
 model.fit(
   training_data,
   to_categorical(training_labels),
-  epochs=20,
-  batch_size=32,
+  epochs=50,
+  batch_size=2,
 )
 
 df5 = pd.read_csv("verificationData.csv")
 predict_data = df5.to_numpy()
 #delete the nans
 predict_data = np.delete(predict_data, 220, 1)
+predict_data = (predict_data/2**15) - 0.5
 
 
 # Evaluate the model.
@@ -81,12 +82,14 @@ predict_data = np.delete(predict_data, 220, 1)
 
 # Load the model from disk later using:
 # model.load_weights('model.h5')
+model.save('keras_model.h5', include_optimizer=False)
+
 
 # Predict on the first 5 test images.
 predictions = model.predict(predict_data)
-
+print(predictions)
 # Print our model's predictions.
-print(np.argmax(predictions, axis=1)) # [7, 2, 1, 0, 4]
+#print(np.argmax(predictions, axis=1)) # [7, 2, 1, 0, 4]
 
 # Check our predictions against the ground truths.
 #print(test_labels[:5]) # [7, 2, 1, 0, 4]
